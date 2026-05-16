@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>情報がないと何が起きる？ 見えない・聞こえない教室ミッション</title>
+  <style>
+    :root {
+      --text: #243044;
+      --muted: #687386;
+      --card: #ffffff;
+      --line: #e6ebf3;
+      --safe: #ee6f9f;
+      --participate: #4d8fe8;
+      --understand: #48b77b;
+      --green-bg: #eaf8ef;
+      --green-border: #75c98f;
+      --yellow-bg: #fff8df;
+      --yellow-border: #e6c852;
+      --red-bg: #fff0f0;
+      --red-border: #ee8a8a;
+    }
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(255, 221, 230, 0.85), transparent 34%),
+    linear-gradient(135deg, #f7fbff 0%, #fff7ec 52%, #eefaf3 100%);
+  line-height: 1.7;
+}
+
+.app {
+  width: min(920px, 100%);
+  margin: 0 auto;
+  padding: 22px 16px 34px;
+}
+
+.topbar {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 24px rgba(70, 80, 110, 0.08);
+}
+
+.progress {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  overflow: hidden;
+  margin-bottom: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ee6f9f, #4d8fe8, #48b77b);
+  transition: width 350ms ease;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 22px;
+  padding: clamp(20px, 4vw, 34px);
+  box-shadow: 0 18px 50px rgba(55, 66, 92, 0.13);
+  animation: fadeScale 260ms ease both;
+}
+
+@keyframes fadeScale {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+h1, h2 {
+  margin: 0 0 14px;
+  line-height: 1.28;
+  letter-spacing: 0;
+}
+
+h1 {
+  font-size: clamp(1.62rem, 5.2vw, 2.55rem);
+}
+
+h2 {
+  font-size: clamp(1.38rem, 4.4vw, 2rem);
+}
+
+p {
+  margin: 0 0 16px;
+  font-size: 1rem;
+}
+
+.lead {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.meters {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fbfcff;
+}
+
+.meter-row {
+  display: grid;
+  grid-template-columns: 7.5em 1fr 3.2em;
+  gap: 10px;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.meter-track {
+  height: 14px;
+  background: #edf1f7;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  width: 50%;
+  border-radius: inherit;
+  transition: width 360ms ease;
+}
+
+.meter-safe {
+  background: linear-gradient(90deg, #ffd1df, var(--safe));
+}
+
+.meter-participate {
+  background: linear-gradient(90deg, #cfe3ff, var(--participate));
+}
+
+.meter-understand {
+  background: linear-gradient(90deg, #cff5dc, var(--understand));
+}
+
+.meter-value {
+  text-align: right;
+  color: var(--muted);
+}
+
+.delta-list {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 2px;
+}
+
+.delta-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  font-weight: 700;
+}
+
+.plus {
+  color: #198754;
+}
+
+.minus {
+  color: #d04444;
+}
+
+.zero {
+  color: var(--muted);
+}
+
+.choices {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+button {
+  width: 100%;
+  min-height: 52px;
+  border: 0;
+  border-radius: 16px;
+  padding: 14px 18px;
+  font: inherit;
+  font-weight: 800;
+  color: #22304a;
+  background: #eef5ff;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+button:hover,
+button:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(54, 73, 112, 0.13);
+  outline: 3px solid rgba(77, 143, 232, 0.22);
+}
+
+.primary {
+  background: linear-gradient(135deg, #4d8fe8, #48b77b);
+  color: white;
+}
+
+.choice {
+  text-align: left;
+  background: #f7faff;
+  border: 1px solid #dfe8f5;
+}
+
+.choice:hover,
+.choice:focus-visible {
+  background: #eef6ff;
+}
+
+.feedback {
+  border-width: 2px;
+}
+
+.feedback.match {
+  background: var(--green-bg);
+  border-color: var(--green-border);
+}
+
+.feedback.near {
+  background: var(--yellow-bg);
+  border-color: var(--yellow-border);
+}
+
+.feedback.miss {
+  background: var(--red-bg);
+  border-color: var(--red-border);
+}
+
+.feedback-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.small-note {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-top: 12px;
+}
+
+.result-score {
+  font-size: clamp(2rem, 9vw, 3.6rem);
+  line-height: 1;
+  font-weight: 950;
+  margin: 10px 0 8px;
+  color: #31425f;
+}
+
+.type {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #eef6ff;
+  color: #24476f;
+  font-weight: 900;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 560px) {
+  .app {
+    padding: 14px 12px 24px;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .meter-row {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .meter-value {
+    text-align: left;
+  }
+
+  button {
+    min-height: 58px;
+  }
+}
+
+
+
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="topbar" id="topbar"></div>
+    <div class="progress" aria-label="進捗">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <section id="screen"></section>
+  </main>
+  <script>
+    const scenarios = [
+      {
+        title: "第1問　返事をしない子の場合",
+        shortTitle: "返事をしない子",
+        intro: "授業中、教師が後ろから名前を呼んでも、ある子どもが返事をしません。周囲からは『無視しているのでは？』という声も出ています。",
+        turns: [
+          {
+            prompt: "最初に教師としてどう関わりますか？",
+            choices: [
+              { text: "もう一度、少し大きな声で呼ぶ", level: "near", score: 1, delta: { safe: -2, participate: 3, understand: 0 }, feedback: "声量を変える工夫はありますが、情報の届き方が変わっていない可能性があります。" },
+              { text: "正面に回り、気づいたことを確認してから伝える", level: "match", score: 2, delta: { safe: 10, participate: 8, understand: 4 }, feedback: "情報が届く位置や伝え方を調整しており、行動を決めつけずに確認できています。" },
+              { text: "みんなの前で『聞いてる？』と注意する", level: "miss", score: 0, delta: { safe: -12, participate: -6, understand: -4 }, feedback: "行動だけを見て評価すると、情報が届いていない可能性を見落としやすくなります。" }
+            ]
+          },
+          {
+            prompt: "次に、原因を考えるために何を確認しますか？",
+            choices: [
+              { text: "教室の騒音や座席位置を確認する", level: "match", score: 2, delta: { safe: 6, participate: 6, understand: 8 }, feedback: "本人だけでなく、環境側の情報の届きにくさを確認できています。" },
+              { text: "本人に『なぜ返事しなかったの？』とすぐ聞く", level: "near", score: 1, delta: { safe: -3, participate: 2, understand: 2 }, feedback: "確認しようとする姿勢はありますが、責められていると感じる可能性もあります。" },
+              { text: "態度の問題として記録しておく", level: "miss", score: 0, delta: { safe: -8, participate: -4, understand: -8 }, feedback: "情報保障の視点がないまま態度として解釈すると、誤解が固定されやすくなります。" }
+            ]
+          },
+          {
+            prompt: "周囲の子どもたちにはどう説明しますか？",
+            choices: [
+              { text: "『無視ではなく、気づきにくいこともある』と伝える", level: "match", score: 2, delta: { safe: 7, participate: 3, understand: 12 }, feedback: "周囲の誤解をほどき、教室全体の理解を育てる関わりです。" },
+              { text: "本人のことには触れず、そのまま授業を進める", level: "near", score: 1, delta: { safe: 4, participate: 4, understand: -3 }, feedback: "本人を守る面はありますが、周囲の誤解が残る可能性があります。" },
+              { text: "『この子は聞こえにくいから仕方ない』と説明する", level: "miss", score: 0, delta: { safe: -6, participate: 1, understand: 3 }, feedback: "説明しようとしていますが、本人を固定的に見せたり、決めつけになったりする危険があります。" }
+            ]
+          },
+          {
+            prompt: "次回からの授業でどんな工夫を入れますか？",
+            choices: [
+              { text: "口頭だけでなく、板書や合図カードでも伝える", level: "match", score: 2, delta: { safe: 8, participate: 10, understand: 6 }, feedback: "複数の情報経路を用意することで、参加しやすさが高まります。" },
+              { text: "その子だけに毎回個別に説明する", level: "near", score: 1, delta: { safe: 2, participate: 6, understand: -5 }, feedback: "支援にはなりますが、周囲から特別扱いに見えたり、本人が目立ったりする可能性があります。" },
+              { text: "返事がなければ参加していないと判断する", level: "miss", score: 0, delta: { safe: -10, participate: -10, understand: -6 }, feedback: "返事の有無だけで参加を判断すると、情報の届きにくさを見落とします。" }
+            ]
+          },
+          {
+            prompt: "このケースから、教師が一番大事にしたい視点はどれですか？",
+            choices: [
+              { text: "行動の前に、情報が届いていたかを考える", level: "match", score: 2, delta: { safe: 8, participate: 7, understand: 8 }, feedback: "行動の背景に情報アクセスの問題がないか考える視点が重要です。" },
+              { text: "返事をする習慣をしっかり身につけさせる", level: "near", score: 1, delta: { safe: -2, participate: 4, understand: -2 }, feedback: "習慣も大切ですが、その前に情報が届く条件を整える必要があります。" },
+              { text: "周囲が困らないように本人に注意する", level: "miss", score: 0, delta: { safe: -8, participate: -5, understand: -4 }, feedback: "本人だけに責任を置くと、教室全体で情報保障を考える機会が失われます。" }
+            ]
+          }
+        ]
+      },
+      {
+        title: "第2問　動きが遅い子の場合",
+        shortTitle: "動きが遅い子",
+        intro: "図工の時間、材料を探すのに時間がかかり、活動開始が遅れている子どもがいます。教師は『不器用なのかな』と感じています。",
+        turns: [
+          {
+            prompt: "最初にどのように見取りますか？",
+            choices: [
+              { text: "不器用さだけでなく、見え方や情報の整理も考える", level: "match", score: 2, delta: { safe: 8, participate: 7, understand: 5 }, feedback: "行動の遅さを能力だけでなく、情報環境から考えられています。" },
+              { text: "早くするように声をかける", level: "near", score: 1, delta: { safe: -3, participate: 3, understand: -2 }, feedback: "活動を進めたい意図はありますが、困難の背景が見えにくいままです。" },
+              { text: "苦手な子として役割を減らす", level: "miss", score: 0, delta: { safe: 2, participate: -12, understand: -6 }, feedback: "安心は一時的に保たれても、学習参加の機会を失いやすくなります。" }
+            ]
+          },
+          {
+            prompt: "材料の置き方をどう変えますか？",
+            choices: [
+              { text: "色・形・触った感覚で分かるように分類する", level: "match", score: 2, delta: { safe: 7, participate: 10, understand: 4 }, feedback: "視覚以外の手がかりも加えることで、活動への参加がしやすくなります。" },
+              { text: "教師が必要な材料を毎回渡す", level: "near", score: 1, delta: { safe: 5, participate: 3, understand: -3 }, feedback: "支援にはなりますが、自分で選ぶ経験や周囲の理解につながりにくい面があります。" },
+              { text: "探せないなら活動時間を短くする", level: "miss", score: 0, delta: { safe: -2, participate: -10, understand: -5 }, feedback: "時間を減らす前に、情報の手がかりを増やす工夫が必要です。" }
+            ]
+          },
+          {
+            prompt: "周囲の子どもが『遅い』と言い始めました。どうしますか？",
+            choices: [
+              { text: "『見つけやすい置き方をみんなで考えよう』と全体の課題にする", level: "match", score: 2, delta: { safe: 8, participate: 5, understand: 12 }, feedback: "個人の問題にせず、環境を一緒に改善する方向に変えています。" },
+              { text: "その発言だけを注意して終わる", level: "near", score: 1, delta: { safe: 4, participate: 1, understand: 1 }, feedback: "否定的な発言を止める効果はありますが、理解を深める機会は少し弱いです。" },
+              { text: "本人にもっと急ぐように伝える", level: "miss", score: 0, delta: { safe: -8, participate: -3, understand: -7 }, feedback: "周囲の誤解を本人の努力不足として強めてしまう可能性があります。" }
+            ]
+          },
+          {
+            prompt: "活動を続けるための支援として何を入れますか？",
+            choices: [
+              { text: "拡大した見本・触って分かる見本・短い手順カードを用意する", level: "match", score: 2, delta: { safe: 6, participate: 12, understand: 5 }, feedback: "複数の情報手段を使い、活動の見通しを持てる支援です。" },
+              { text: "友だちに毎回説明してもらう", level: "near", score: 1, delta: { safe: 3, participate: 5, understand: 4 }, feedback: "友だちの支援は助けになりますが、本人が自分で分かる環境づくりも必要です。" },
+              { text: "完成度を下げて簡単な課題に変える", level: "miss", score: 0, delta: { safe: 1, participate: -6, understand: -4 }, feedback: "課題を下げる前に、同じ活動に参加できる情報保障を考えたいところです。" }
+            ]
+          },
+          {
+            prompt: "このケースの振り返りとして、最も大切な視点は？",
+            choices: [
+              { text: "遅さの背景に、情報の見つけにくさがないか考える", level: "match", score: 2, delta: { safe: 8, participate: 7, understand: 8 }, feedback: "行動の遅さを本人の問題だけにせず、環境との関係で見ています。" },
+              { text: "苦手な活動は無理にやらせない", level: "near", score: 1, delta: { safe: 4, participate: -4, understand: -2 }, feedback: "無理をさせない配慮は大切ですが、参加の可能性を狭めすぎないことも大切です。" },
+              { text: "作業が速い子に合わせて進める", level: "miss", score: 0, delta: { safe: -7, participate: -8, understand: -6 }, feedback: "速さを基準にすると、情報が届きにくい子の参加が見えにくくなります。" }
+            ]
+          }
+        ]
+      },
+      {
+        title: "第3問　説明を聞き逃す子の場合",
+        shortTitle: "説明を聞き逃す子",
+        intro: "グループ活動の説明後、一人だけ動けずにいます。教師は『集中していなかったのかな』と感じています。",
+        turns: [
+          {
+            prompt: "最初の対応として何をしますか？",
+            choices: [
+              { text: "要点を文字や図でも示し、分かったところを確認する", level: "match", score: 2, delta: { safe: 8, participate: 9, understand: 4 }, feedback: "聞く情報だけに頼らず、視覚的な情報保障を加えています。" },
+              { text: "もう一度同じ説明を繰り返す", level: "near", score: 1, delta: { safe: 2, participate: 4, understand: 0 }, feedback: "再説明は助けになりますが、同じ方法だけでは届きにくさが残る場合があります。" },
+              { text: "集中して聞くように注意する", level: "miss", score: 0, delta: { safe: -9, participate: -5, understand: -5 }, feedback: "聞き逃しを集中力だけで判断すると、情報保障の必要性を見落とします。" }
+            ]
+          },
+          {
+            prompt: "活動の手順をどう示しますか？",
+            choices: [
+              { text: "1. 何をする 2. 何を使う 3. いつ終わる、のように短く提示する", level: "match", score: 2, delta: { safe: 6, participate: 10, understand: 5 }, feedback: "見通しが持てる形に情報を整理できています。" },
+              { text: "近くの子に聞くように言う", level: "near", score: 1, delta: { safe: 1, participate: 4, understand: 3 }, feedback: "仲間の支援は有効ですが、まず全員に届く提示を整える視点も必要です。" },
+              { text: "分からないなら見学にする", level: "miss", score: 0, delta: { safe: -2, participate: -12, understand: -4 }, feedback: "参加を外す前に、情報の出し方を変える必要があります。" }
+            ]
+          },
+          {
+            prompt: "グループの子どもたちにはどう働きかけますか？",
+            choices: [
+              { text: "『説明は一度で分かるとは限らないから、確認し合おう』と伝える", level: "match", score: 2, delta: { safe: 7, participate: 5, understand: 11 }, feedback: "個人を責めず、確認し合える教室文化につなげています。" },
+              { text: "その子だけに友だちを一人つける", level: "near", score: 1, delta: { safe: 3, participate: 6, understand: -2 }, feedback: "支援にはなりますが、固定的な役割や特別扱いに見える可能性があります。" },
+              { text: "説明を聞いていなかったことを全体に知らせる", level: "miss", score: 0, delta: { safe: -12, participate: -6, understand: -5 }, feedback: "本人を責める形になり、安心して確認することが難しくなります。" }
+            ]
+          },
+          {
+            prompt: "次回の説明場面で、どの工夫を優先しますか？",
+            choices: [
+              { text: "話す前に注目サインを出し、話した後に板書で要点を残す", level: "match", score: 2, delta: { safe: 7, participate: 8, understand: 8 }, feedback: "聞く準備と情報の保持の両方を支えています。" },
+              { text: "説明を短くして早く活動に入る", level: "near", score: 1, delta: { safe: 1, participate: 5, understand: -2 }, feedback: "短くするのは有効ですが、情報が残る形にする工夫が不足しています。" },
+              { text: "聞けなかった子だけ後で呼び出す", level: "miss", score: 0, delta: { safe: -4, participate: 1, understand: -5 }, feedback: "個別対応だけにすると、授業中の参加や周囲の理解につながりにくくなります。" }
+            ]
+          },
+          {
+            prompt: "このケースを通して、教師が持ちたい問いはどれですか？",
+            choices: [
+              { text: "説明は本当に届く形になっていたか？", level: "match", score: 2, delta: { safe: 8, participate: 7, understand: 8 }, feedback: "子どもの集中力だけでなく、情報提示の設計を問い直せています。" },
+              { text: "この子は話を聞く気があったか？", level: "near", score: 1, delta: { safe: -3, participate: 1, understand: -3 }, feedback: "意欲も関係する場合はありますが、それだけで判断すると情報保障が見えにくくなります。" },
+              { text: "分からない子はどの程度まで自己責任か？", level: "miss", score: 0, delta: { safe: -7, participate: -7, understand: -7 }, feedback: "自己責任として考える前に、学習に参加できる情報環境だったかを考える必要があります。" }
+            ]
+          }
+        ]
+      }
+    ];
+
+    let currentScreen = "start";
+    let currentScenarioIndex = 0;
+    let currentTurnIndex = 0;
+    let score = 0;
+    let meters = { safe: 50, participate: 50, understand: 50 };
+    let lastChoice = null;
+    let lastDelta = null;
+    let answerHistory = [];
+
+    const screen = document.getElementById("screen");
+    const topbar = document.getElementById("topbar");
+    const progressFill = document.getElementById("progressFill");
+
+    const meterLabels = {
+      safe: "子どもの安心",
+      participate: "学習参加",
+      understand: "周囲の理解"
+    };
+
+    const levelLabels = {
+      match: "いいですね！",
+      near: "おしい！",
+      miss: "注目してみよう！"
+    };
+
+    function clamp(value) {
+      return Math.max(0, Math.min(100, value));
+    }
+
+    function totalTurnsDone() {
+      return currentScenarioIndex * 5 + currentTurnIndex;
+    }
+
+    function updateFrame() {
+      const scenarioNumber = Math.min(currentScenarioIndex + 1, 3);
+      const turnNumber = currentScreen === "start" || currentScreen === "scenarioIntro" ? 0 : Math.min(currentTurnIndex + 1, 5);
+      const progress = currentScreen === "result" ? 100 : Math.round((answerHistory.length / 15) * 100);
+
+      topbar.innerHTML = `
+        <span class="badge">第${scenarioNumber}問 / 3</span>
+        <span class="badge">ターン${turnNumber} / 5</span>
+        <span class="badge">スコア ${score} / 30</span>
+      `;
+      progressFill.style.width = progress + "%";
+    }
+
+    function meterHtml() {
+      return `
+        <div class="meters" aria-label="教室の状態メーター">
+          ${meterRow("safe", "meter-safe")}
+          ${meterRow("participate", "meter-participate")}
+          ${meterRow("understand", "meter-understand")}
+        </div>
+      `;
+    }
+
+    function meterRow(key, className) {
+      return `
+        <div class="meter-row">
+          <div>${meterLabels[key]}</div>
+          <div class="meter-track" aria-hidden="true">
+            <div class="meter-fill ${className}" style="width:${meters[key]}%"></div>
+          </div>
+          <div class="meter-value">${meters[key]}</div>
+        </div>
+      `;
+    }
+
+    function deltaHtml(delta) {
+      return `
+        <div class="delta-list">
+          ${Object.keys(meterLabels).map(key => {
+            const value = delta[key];
+            const sign = value > 0 ? "+" : "";
+            const tone = value > 0 ? "plus" : value < 0 ? "minus" : "zero";
+            return `<div class="delta-item"><span>${meterLabels[key]}</span><span class="${tone}">${sign}${value}</span></div>`;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function renderStart() {
+      currentScreen = "start";
+      updateFrame();
+      screen.innerHTML = `
+        <div class="card">
+          <h1>情報がないと何が起きる？<br>見えない・聞こえない教室ミッション</h1>
+          <p class="lead">視覚障害・聴覚障害のある子どもの理解と支援について、教師の対応で教室の状態がどう変わるかを予測しながら考えるシミュレーションゲームです。</p>
+          ${meterHtml()}
+          <p class="small-note">3つのケースを各5ターンで進めます。正解探しではなく、「情報が届いているか」という視点を育てるためのゲームです。</p>
+          <button class="primary" onclick="startGame()">はじめる</button>
+        </div>
+      `;
+    }
+
+    function startGame() {
+      currentScenarioIndex = 0;
+      currentTurnIndex = 0;
+      score = 0;
+      meters = { safe: 50, participate: 50, understand: 50 };
+      lastChoice = null;
+      lastDelta = null;
+      answerHistory = [];
+      renderScenarioIntro();
+    }
+
+    function renderScenarioIntro() {
+      currentScreen = "scenarioIntro";
+      updateFrame();
+      const scenario = scenarios[currentScenarioIndex];
+      screen.innerHTML = `
+        <div class="card">
+          <h2>${scenario.title}</h2>
+          <p class="lead">${scenario.intro}</p>
+          ${meterHtml()}
+          <button class="primary" onclick="renderTurn()">このケースを考える</button>
+        </div>
+      `;
+    }
+
+    function renderTurn() {
+      currentScreen = "turn";
+      updateFrame();
+      const scenario = scenarios[currentScenarioIndex];
+      const turn = scenario.turns[currentTurnIndex];
+
+      screen.innerHTML = `
+        <div class="card">
+          <p class="lead">${scenario.shortTitle}</p>
+          <h2>${turn.prompt}</h2>
+          ${meterHtml()}
+          <div class="choices">
+            ${turn.choices.map((choice, index) => `
+              <button class="choice" onclick="selectChoice(${index})">${choice.text}</button>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectChoice(choiceIndex) {
+      const scenario = scenarios[currentScenarioIndex];
+      const turn = scenario.turns[currentTurnIndex];
+      const choice = turn.choices[choiceIndex];
+
+      lastChoice = choice;
+      lastDelta = choice.delta;
+      score += choice.score;
+
+      Object.keys(meters).forEach(key => {
+        meters[key] = clamp(meters[key] + choice.delta[key]);
+      });
+
+      answerHistory.push({
+        scenario: currentScenarioIndex,
+        turn: currentTurnIndex,
+        choiceText: choice.text,
+        level: choice.level,
+        score: choice.score,
+        delta: choice.delta
+      });
+
+      renderFeedback();
+    }
+
+    function renderFeedback() {
+      currentScreen = "feedback";
+      updateFrame();
+      const label = levelLabels[lastChoice.level];
+
+      screen.innerHTML = `
+        <div class="card feedback ${lastChoice.level}">
+          <div class="feedback-label">評価：${label}</div>
+          <h2>${lastChoice.text}</h2>
+          <p>${lastChoice.feedback}</p>
+          ${deltaHtml(lastDelta)}
+          ${meterHtml()}
+          <button class="primary" onclick="nextStep()">次へ</button>
+        </div>
+      `;
+    }
+
+    function nextStep() {
+      currentTurnIndex++;
+
+      if (currentTurnIndex >= 5) {
+        currentScenarioIndex++;
+        currentTurnIndex = 0;
+
+        if (currentScenarioIndex >= scenarios.length) {
+          renderResult();
+        } else {
+          renderScenarioIntro();
+        }
+      } else {
+        renderTurn();
+      }
+    }
+
+    function diagnosis() {
+      if (score <= 6) {
+        return {
+          type: "気づきのタネ発見タイプ",
+          comment: "まずは『行動の背景に何があるか』に気づくところから始めましょう。"
+        };
+      }
+      if (score <= 13) {
+        return {
+          type: "教室観察ビギナータイプ",
+          comment: "子どもの行動だけでなく、情報の届き方に目を向け始めています。"
+        };
+      }
+      if (score <= 22) {
+        return {
+          type: "情報保障プランナータイプ",
+          comment: "情報保障や周囲の理解をバランスよく考えられています。"
+        };
+      }
+      return {
+        type: "支援改善クリエイタータイプ",
+        comment: "子どもの安心・参加・周囲の理解を同時に考える視点があります。"
+      };
+    }
+
+    function renderResult() {
+      currentScreen = "result";
+      updateFrame();
+      const result = diagnosis();
+
+      screen.innerHTML = `
+        <div class="card">
+          <h2>結果</h2>
+          <div class="result-score">${score} / 30点</div>
+          <div class="type">${result.type}</div>
+          <p>${result.comment}</p>
+          ${meterHtml()}
+          <p class="small-note">この結果は一つの見方です。AIの判定を鵜呑みにせず、実際の教室では本人の感じ方、環境、周囲との関係を丁寧に見ながら「自分ならどうするか」を考えてみてください。</p>
+          <button class="primary" onclick="renderStart()">もう一度プレイ</button>
+        </div>
+      `;
+    }
+
+    renderStart();
+  </script>
+</body>
+</html>
